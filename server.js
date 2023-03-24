@@ -20,6 +20,7 @@ const respondNotFound = (req, res) => {
 const server = http.createServer((req, res) =>{
     if(req.url === '/') return respondText(req, res)
     if(req.url === '/json') return respondJson(req, res)
+    if(req.url.match(/^\/echo/)) return respondEcho(req, res)
 
     respondNotFound(req, res)
 })
