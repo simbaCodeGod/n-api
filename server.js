@@ -17,6 +17,28 @@ const respondNotFound = (req, res) => {
     res.end('Not Found')
 }
 
+const respondEcho = (req, res) => {
+    const { input = '' } = queryString.parse(
+        req.url
+            .split('?')
+            .slice(1)
+            .join('')
+    )
+
+    res.setHeader('Content-Type': 'application/json')
+    res.end(
+        JSON.stringify({
+            normal: input,
+            shouty: input.toUpperCase(),
+            characterCount: input.length,
+            backwards: input
+                .split('')
+                .reverse()
+                .join('')
+        })
+    )
+}
+
 const server = http.createServer((req, res) =>{
     if(req.url === '/') return respondText(req, res)
     if(req.url === '/json') return respondJson(req, res)
