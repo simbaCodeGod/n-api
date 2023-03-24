@@ -1,4 +1,5 @@
 const http = require('http')
+const querystring = require('querystring')
 
 const port = process.env.PORT|| 1337
 
@@ -13,19 +14,19 @@ const respondJson = (req, res) => {
 }
 
 const respondNotFound = (req, res) => {
-    res.writeHead(404, {'Content-Type' : 'text/plain'})
+    res.writeHead(404, {'Content-Type': 'text/plain'})
     res.end('Not Found')
 }
 
 const respondEcho = (req, res) => {
-    const { input = '' } = queryString.parse(
+    const { input = '' } = querystring.parse(
         req.url
             .split('?')
             .slice(1)
             .join('')
     )
 
-    res.setHeader('Content-Type': 'application/json')
+    res.setHeader('Content-Type', 'application/json')
     res.end(
         JSON.stringify({
             normal: input,
