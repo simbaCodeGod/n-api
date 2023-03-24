@@ -17,5 +17,12 @@ const respondNotFound = (req, res) => {
     res.end('Not Found')
 }
 
+const server = http.createServer((req, res) =>{
+    if(req.url === '/') return respondText(req, res)
+    if(req.url === '/json') return respondJson(req, res)
+
+    respondNotFound(req, res)
+})
+
 server.listen(port);
 console.log(`Server listening on port ${port}`)
