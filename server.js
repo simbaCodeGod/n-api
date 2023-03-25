@@ -1,6 +1,7 @@
 const fs = require('fs')
-const http = require('http')
-const querystring = require('querystring')
+const express = require('express')
+
+const app = express()
 
 const port = process.env.PORT|| 1337
 
@@ -11,7 +12,7 @@ const respondText = (req, res) => {
 
 const respondJson = (req, res) => {
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({text: 'hi', nummbers: [1, 2, 3] }))
+    res.json({text: 'hi', nummbers: [1, 2, 3] })
 }
 
 const respondNotFound = (req, res) => {
@@ -20,16 +21,9 @@ const respondNotFound = (req, res) => {
 }
 
 const respondEcho = (req, res) => {
-    const { input = '' } = querystring.parse(
-        req.url
-            .split('?')
-            .slice(1)
-            .join('')
-    )
+    const { input = '' } = req.query
 
-    res.setHeader('Content-Type', 'application/json')
-    res.end(
-        JSON.stringify({
+    res.json({
             normal: input,
             shouty: input.toUpperCase(),
             characterCount: input.length,
@@ -38,24 +32,18 @@ const respondEcho = (req, res) => {
                 .reverse()
                 .join('')
         })
-    )
 }
 
 const respondStatic = (req, res) => {
-    const filename = `${__dirname}/public${req.url.split('/static')[1]}`
+    const filename = `${__dirname}/public${req.params[0]}`
     fs.createReadStream(filename)
     .on('error', () => respondNotFound(req, res))
     .pipe(res)
 }
 
-const server = http.createServer((req, res) =>{
-    if(req.url === '/') return respondText(req, res)
-    if(req.url === '/json') return respondJson(req, res)
-    if(req.url.match(/^\/echo/)) return respondEcho(req, res)
-    if(req.url.match(/^\/static/)) return respondStatic(req, res)
+app.get('/', respondText)
+app.get('/json', respondJson)
+app.get('/echo', respondEcho)
+app.get('/static/*', respondStatic)
 
-    respondNotFound(req, res)
-})
-
-server.listen(port);
-console.log(`Server listening on port ${port}`)
+app.listen( port, () => console.log(`Server listening on port ${port}`))
